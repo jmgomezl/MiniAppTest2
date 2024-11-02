@@ -29,7 +29,7 @@
             border: none;
             transition: background-color 0.3s ease;
         }
-        button:hover {
+        button:hover:not(.disabled) {
             background-color: #45a049;
         }
         .bet-options {
@@ -53,6 +53,7 @@
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
+            transition: background-image 0.3s ease;
         }
         
         .spinning {
@@ -64,10 +65,10 @@
             100% { transform: rotateY(360deg); }
         }
 
-        /* Disable buttons during animation */
         .disabled {
             opacity: 0.5;
             pointer-events: none;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -76,8 +77,8 @@
     <h1>Telegram Betting Game</h1>
     <div class="bet-options">
         <p>Choose your bet and try your luck!</p>
-        <button id="headsBtn" onclick="placeBet('heads')">Bet on Heads</button>
-        <button id="tailsBtn" onclick="placeBet('tails')">Bet on Tails</button>
+        <button id="headsBtn" onclick="placeBet('head')">Bet on Heads</button>
+        <button id="tailsBtn" onclick="placeBet('tail')">Bet on Tails</button>
     </div>
 
     <div id="coin" class="coin spinning"></div>
@@ -91,14 +92,14 @@
         // Preload images
         const images = {
             flipping: new Image(),
-            heads: new Image(),
-            tails: new Image()
+            head: new Image(),
+            tail: new Image()
         };
 
-        // Set image sources - update these paths to match your actual image locations
-        images.flipping.src = '/assets/flipping.webp';
-        images.heads.src = '/assets/heads.webp';
-        images.tails.src = '/assets/tails.webp';
+        // Set correct image sources
+        images.flipping.src = './assets/flipping.webp';
+        images.head.src = './assets/head.webp';
+        images.tail.src = './assets/tail.webp';
 
         // Initialize elements
         const coinElement = document.getElementById('coin');
@@ -108,6 +109,9 @@
 
         // Set initial coin image
         coinElement.style.backgroundImage = `url('${images.flipping.src}')`;
+
+        // Track if animation is in progress
+        let isAnimating = false;
 
         function disableButtons() {
             headsButton.classList.add('disabled');
@@ -120,15 +124,22 @@
         }
 
         function resetCoin() {
-            coinElement.style.backgroundImage = `url('${images.flipping.src}')`;
-            coinElement.classList.add('spinning');
-            resultElement.innerText = '';
-            enableButtons();
+            if (!isAnimating) {
+                coinElement.style.backgroundImage = `url('${images.flipping.src}')`;
+                coinElement.classList.add('spinning');
+                resultElement.innerText = '';
+                enableButtons();
+            }
         }
 
         let resetTimeout;
 
         function placeBet(choice) {
+            // Prevent multiple bets while animating
+            if (isAnimating) return;
+            
+            isAnimating = true;
+
             // Clear any existing timeout
             if (resetTimeout) {
                 clearTimeout(resetTimeout);
@@ -138,24 +149,30 @@
             disableButtons();
 
             // Randomize the outcome
-            const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
+            const outcome = Math.random() < 0.5 ? 'head' : 'tail';
             const isWin = outcome === choice;
 
-            // Display result text
-            resultElement.innerText = isWin ? 
-                `You won! It landed on ${outcome}.` : 
-                `You lost! It landed on ${outcome}.`;
-            resultElement.className = `result ${isWin ? 'win' : 'lose'}`;
+            // Short delay before showing result
+            setTimeout(() => {
+                // Display result text
+                resultElement.innerText = isWin ? 
+                    `You won! It landed on ${outcome}s.` : 
+                    `You lost! It landed on ${outcome}s.`;
+                resultElement.className = `result ${isWin ? 'win' : 'lose'}`;
 
-            // Stop the spinning animation and show the result
-            coinElement.classList.remove('spinning');
-            coinElement.style.backgroundImage = `url('${images[outcome].src}')`;
+                // Stop the spinning animation and show the result
+                coinElement.classList.remove('spinning');
+                coinElement.style.backgroundImage = `url('${images[outcome].src}')`;
 
-            // Show alert in Telegram
-            Telegram.WebApp.showAlert(isWin ? "Congratulations! You won!" : "Better luck next time! You lost!");
+                // Show alert in Telegram
+                Telegram.WebApp.showAlert(isWin ? "Congratulations! You won!" : "Better luck next time! You lost!");
 
-            // Reset after 7 seconds
-            resetTimeout = setTimeout(resetCoin, 7000);
+                // Reset after 5 seconds (reduced from 7 for better gameplay flow)
+                resetTimeout = setTimeout(() => {
+                    resetCoin();
+                    isAnimating = false;
+                }, 5000);
+            }, 1000); // Show result after 1 second of spinning
         }
 
         // Set theme and color scheme
@@ -170,9 +187,11 @@
         Telegram.WebApp.MainButton.onClick(function () {
             Telegram.WebApp.showAlert("Choose heads or tails to start!");
         });
+
+        // Initial reset to ensure proper state
+        resetCoin();
     </script>
 </body>
 </html>
-
 
 
