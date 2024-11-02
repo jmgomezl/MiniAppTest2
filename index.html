@@ -32,6 +32,12 @@
         button:hover:not(.disabled) {
             background-color: #45a049;
         }
+        #resetBtn {
+            background-color: #ff9800;
+        }
+        #resetBtn:hover {
+            background-color: #f57c00;
+        }
         .bet-options {
             margin: 20px 0;
         }
@@ -70,6 +76,10 @@
             pointer-events: none;
             cursor: not-allowed;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 
@@ -79,6 +89,7 @@
         <p>Choose your bet and try your luck!</p>
         <button id="headsBtn" onclick="placeBet('head')">Bet on Heads</button>
         <button id="tailsBtn" onclick="placeBet('tail')">Bet on Tails</button>
+        <button id="resetBtn" onclick="resetGame()" class="hidden">Play Again</button>
     </div>
 
     <div id="coin" class="coin spinning"></div>
@@ -106,6 +117,7 @@
         const resultElement = document.getElementById('result');
         const headsButton = document.getElementById('headsBtn');
         const tailsButton = document.getElementById('tailsBtn');
+        const resetButton = document.getElementById('resetBtn');
 
         // Set initial coin image
         coinElement.style.backgroundImage = `url('${images.flipping.src}')`;
@@ -123,27 +135,20 @@
             tailsButton.classList.remove('disabled');
         }
 
-        function resetCoin() {
-            if (!isAnimating) {
-                coinElement.style.backgroundImage = `url('${images.flipping.src}')`;
-                coinElement.classList.add('spinning');
-                resultElement.innerText = '';
-                enableButtons();
-            }
+        function resetGame() {
+            coinElement.style.backgroundImage = `url('${images.flipping.src}')`;
+            coinElement.classList.add('spinning');
+            resultElement.innerText = '';
+            enableButtons();
+            resetButton.classList.add('hidden');
+            isAnimating = false;
         }
-
-        let resetTimeout;
 
         function placeBet(choice) {
             // Prevent multiple bets while animating
             if (isAnimating) return;
             
             isAnimating = true;
-
-            // Clear any existing timeout
-            if (resetTimeout) {
-                clearTimeout(resetTimeout);
-            }
 
             // Disable buttons during animation
             disableButtons();
@@ -167,11 +172,8 @@
                 // Show alert in Telegram
                 Telegram.WebApp.showAlert(isWin ? "Congratulations! You won!" : "Better luck next time! You lost!");
 
-                // Reset after 5 seconds (reduced from 7 for better gameplay flow)
-                resetTimeout = setTimeout(() => {
-                    resetCoin();
-                    isAnimating = false;
-                }, 5000);
+                // Show reset button
+                resetButton.classList.remove('hidden');
             }, 1000); // Show result after 1 second of spinning
         }
 
@@ -189,7 +191,7 @@
         });
 
         // Initial reset to ensure proper state
-        resetCoin();
+        resetGame();
     </script>
 </body>
 </html>
