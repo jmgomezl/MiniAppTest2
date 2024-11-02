@@ -132,7 +132,7 @@
             transform: scale(0.98);
         }
 
-        #playAgainBtn {
+        #tryAgainBtn {
             font-size: 28px;
             padding: 15px 40px;
             margin-top: 20px;
@@ -144,21 +144,16 @@
             transition: all 0.3s ease;
             width: 250px;
             height: 70px;
-            display: none;
+            display: flex;
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        #playAgainBtn:hover {
+        #tryAgainBtn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.15);
             background-color: #558B41;
-        }
-
-        #playAgainBtn.visible {
-            display: flex;
-            animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
@@ -185,7 +180,7 @@
 
     <div id="coin" class="coin spinning"></div>
     <div id="result" class="result"></div>
-    <button id="playAgainBtn" onclick="resetGame()">Try Your Luck Again</button>
+    <button id="tryAgainBtn" onclick="resetGame()">Try Your Luck Again</button>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -194,7 +189,7 @@
         const resultElement = document.getElementById('result');
         const headsButton = document.getElementById('headsBtn');
         const tailsButton = document.getElementById('tailsBtn');
-        const playAgainBtn = document.getElementById('playAgainBtn');
+        const tryAgainBtn = document.getElementById('tryAgainBtn');
 
         // Set initial state
         let isAnimating = false;
@@ -210,13 +205,6 @@
             tailsButton.classList.remove('disabled');
         }
 
-        function showPlayAgainButton() {
-            playAgainBtn.classList.add('visible');
-        }
-
-        function hidePlayAgainButton() {
-            playAgainBtn.classList.remove('visible');
-        }
 
         function resetGame() {
             document.body.className = '';
@@ -225,7 +213,6 @@
             resultElement.innerText = '';
             resultElement.className = 'result';
             enableButtons();
-            hidePlayAgainButton();
             isAnimating = false;
         }
 
@@ -234,7 +221,6 @@
             
             isAnimating = true;
             disableButtons();
-            hidePlayAgainButton();
 
             const outcome = Math.random() < 0.5 ? 'head' : 'tail';
             const isWin = outcome === choice;
@@ -258,8 +244,6 @@
                     "🎉 Congratulations! You won! 🎉" : 
                     "Better luck next time!");
                 
-                // Show play again button
-                showPlayAgainButton();
             }, 1000);
         }
 
