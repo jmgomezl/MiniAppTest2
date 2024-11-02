@@ -16,46 +16,47 @@
             color-scheme: var(--tg-color-scheme);
         }
         h1 {
-            color: #2e8b57;
+            color: #0B4619;
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+        .subtitle {
+            font-size: 24px;
+            margin-bottom: 30px;
         }
         button {
-            font-size: 16px;
-            padding: 10px 20px;
+            font-size: 24px;
+            padding: 15px 40px;
             margin: 10px;
             cursor: pointer;
-            border-radius: 5px;
-            background-color: #4CAF50;
+            border-radius: 15px;
+            background-color: #79B465;
             color: white;
             border: none;
             transition: background-color 0.3s ease;
+            width: 200px;
         }
         button:hover:not(.disabled) {
-            background-color: #45a049;
-        }
-        #resetBtn {
-            background-color: #ff9800;
-        }
-        #resetBtn:hover {
-            background-color: #f57c00;
+            background-color: #558B41;
         }
         .bet-options {
             margin: 20px 0;
         }
         .result {
-            font-size: 18px;
+            font-size: 24px;
             margin-top: 20px;
             font-weight: bold;
         }
         .win {
-            color: #28a745;
+            color: #0B4619;
         }
         .lose {
             color: #dc3545;
         }
         .coin {
             margin: 20px auto;
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -77,23 +78,24 @@
             cursor: not-allowed;
         }
 
-        .hidden {
-            display: none;
+        #playAgainBtn {
+            background-color: #79B465;
+            margin-top: 20px;
         }
     </style>
 </head>
 
 <body>
     <h1>Telegram Betting Game</h1>
+    <div class="subtitle">Choose your bet and try your luck!</div>
     <div class="bet-options">
-        <p>Choose your bet and try your luck!</p>
         <button id="headsBtn" onclick="placeBet('head')">Bet on Heads</button>
         <button id="tailsBtn" onclick="placeBet('tail')">Bet on Tails</button>
-        <button id="resetBtn" onclick="resetGame()" class="hidden">Play Again</button>
     </div>
 
     <div id="coin" class="coin spinning"></div>
     <div id="result" class="result"></div>
+    <button id="playAgainBtn" onclick="resetGame()" style="display: none;">Play Again</button>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -117,7 +119,7 @@
         const resultElement = document.getElementById('result');
         const headsButton = document.getElementById('headsBtn');
         const tailsButton = document.getElementById('tailsBtn');
-        const resetButton = document.getElementById('resetBtn');
+        const playAgainButton = document.getElementById('playAgainBtn');
 
         // Set initial coin image
         coinElement.style.backgroundImage = `url('${images.flipping.src}')`;
@@ -140,7 +142,7 @@
             coinElement.classList.add('spinning');
             resultElement.innerText = '';
             enableButtons();
-            resetButton.classList.add('hidden');
+            playAgainButton.style.display = 'none';
             isAnimating = false;
         }
 
@@ -172,9 +174,9 @@
                 // Show alert in Telegram
                 Telegram.WebApp.showAlert(isWin ? "Congratulations! You won!" : "Better luck next time! You lost!");
 
-                // Show reset button
-                resetButton.classList.remove('hidden');
-            }, 1000); // Show result after 1 second of spinning
+                // Show play again button
+                playAgainButton.style.display = 'inline-block';
+            }, 1000);
         }
 
         // Set theme and color scheme
