@@ -53,7 +53,7 @@
             background-image: url('./assets/flipping.webp');
             background-size: contain;
             background-repeat: no-repeat;
-            animation: spin 1.5s linear infinite;
+            animation: spin 1.5s linear;
         }
         .coin-heads {
             background-image: url('./assets/head.webp');
@@ -98,14 +98,16 @@
                 const resultElement = document.getElementById('result');
                 const isWin = outcome === choice;
 
-                // Update the coin image based on the result
-                coinElement.className = isWin ? 'coin coin-heads' : 'coin coin-tails';
-
-                // Display win or lose message
+                // Update the result text
                 resultElement.innerText = isWin ? 
                     `You won! It landed on ${outcome}.` : 
                     `You lost! It landed on ${outcome}.`;
                 resultElement.className = `result ${isWin ? 'win' : 'lose'}`;
+
+                // Delay to show the final coin image after the animation
+                setTimeout(() => {
+                    coinElement.className = isWin ? 'coin coin-heads' : 'coin coin-tails';
+                }, 100); // 100ms delay
 
                 // Show alert in Telegram
                 Telegram.WebApp.showAlert(isWin ? "Congratulations! You won!" : "Better luck next time! You lost.");
