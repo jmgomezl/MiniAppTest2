@@ -114,7 +114,6 @@
             background-repeat: no-repeat;
             background-position: center;
             transition: all 0.3s ease;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
         }
         
         .spinning {
@@ -132,54 +131,45 @@
             transform: scale(0.95);
         }
 
-        .reset-button {
+        .play-again-button {
             font-size: 28px;
-            padding: 20px;
+            padding: 20px 40px;
             margin: 30px auto 0;
             cursor: pointer;
             border-radius: 25px;
-            background-color: #3498DB;
+            background-color: #79B465;
             color: white;
             border: none;
             transition: all 0.3s ease;
             width: 250px;
             height: 70px;
-            display: flex;
+            display: none; /* Will be shown when needed */
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            animation: fadeIn 0.5s ease;
         }
 
-        .reset-button:hover {
+        .play-again-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-            background-color: #2980B9;
+            background-color: #558B41;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stats {
-            margin-top: 20px;
-            font-size: 16px;
-            color: #7F8C8D;
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 
 <body>
     <h1>Coin Flip Fortune</h1>
-    <div class="tagline">Where Luck Meets Destiny</div>
-    <div class="subtitle">Choose your bet and chase fortune!</div>
+    <div class="subtitle">Choose your bet and try your luck!</div>
     <div class="bet-options">
         <button class="bet-button" id="headsBtn" onclick="placeBet('head')">
             <span>Bet on</span>
@@ -193,8 +183,10 @@
 
     <div id="coin" class="coin spinning"></div>
     <div id="result" class="result"></div>
-    <button class="reset-button" onclick="resetGame()" style="display: none;">Try Your Luck Again</button>
-    <div id="stats" class="stats"></div>
+    
+    <div class="button-container">
+        <button id="playAgainBtn" class="play-again-button" onclick="resetGame()">Play Again</button>
+    </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -204,21 +196,10 @@
         const resultElement = document.getElementById('result');
         const headsButton = document.getElementById('headsBtn');
         const tailsButton = document.getElementById('tailsBtn');
-        const resetButton = document.querySelector('.reset-button');
-        const statsElement = document.getElementById('stats');
-
-        let gameStats = {
-            total: 0,
-            wins: 0
-        };
+        const playAgainButton = document.getElementById('playAgainBtn');
 
         coinElement.style.backgroundImage = "url('./assets/flipping.webp')";
         let isAnimating = false;
-
-        function updateStats() {
-            const winRate = gameStats.total > 0 ? ((gameStats.wins / gameStats.total) * 100).toFixed(1) : 0;
-            statsElement.textContent = `Games Played: ${gameStats.total} | Win Rate: ${winRate}%`;
-        }
 
         function disableButtons() {
             headsButton.classList.add('disabled');
@@ -237,7 +218,7 @@
             resultElement.innerText = '';
             resultElement.classList.remove('show', 'win', 'lose');
             enableButtons();
-            resetButton.style.display = 'none';
+            playAgainButton.style.display = 'none';
             isAnimating = false;
         }
 
@@ -246,39 +227,37 @@
             
             isAnimating = true;
             disableButtons();
-            gameStats.total++;
 
             const outcome = Math.random() < 0.5 ? 'head' : 'tail';
             const isWin = outcome === choice;
 
-            if (isWin) gameStats.wins++;
-            updateStats();
-
             setTimeout(() => {
+                // Stop animation and show result
                 coinElement.classList.remove('spinning');
                 coinElement.style.backgroundImage = `url('./assets/${outcome}.webp')`;
                 
+                // Show result text
                 resultElement.innerText = isWin ? 
-                    `🎉 You won! It landed on ${outcome}s! 🎉` : 
+                    `You won! It landed on ${outcome}s.` : 
                     `You lost! It landed on ${outcome}s.`;
-                
                 resultElement.className = `result ${isWin ? 'win' : 'lose'} show`;
-                document.body.className = isWin ? 'win-background' : 'lose-background';
                 
-                Telegram.WebApp.showAlert(isWin ? 
-                    "🎉 Congratulations! Fortune favors the bold! 🎉" : 
-                    "Better luck next time! The tide of fortune is ever-changing!");
-
-                resetButton.style.display = 'flex';
+                // Show Telegram alert
+                Telegram.WebApp.showAlert(isWin ? "Congratulations! You won!" : "Better luck next time! You lost!");
+                
+                // Show play again button
+                playAgainButton.style.display = 'flex';
+                playAgainButton.style.animation = 'fadeIn 0.5s ease';
             }, 1000);
         }
 
+        // Set theme and color scheme
         Telegram.WebApp.onEvent('themeChanged', function() {
             document.body.setAttribute('style', '--bg-color:' + Telegram.WebApp.backgroundColor);
         });
 
+        // Initial setup
         resetGame();
-        updateStats();
     </script>
 </body>
 </html>
