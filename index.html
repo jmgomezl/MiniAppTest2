@@ -19,6 +19,37 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg at 50% 50%,
+                var(--tg-theme-secondary-bg-color, #f0f0f0) 0deg,
+                var(--tg-theme-bg-color, #ffffff) 60deg,
+                var(--tg-theme-secondary-bg-color, #f0f0f0) 120deg,
+                var(--tg-theme-bg-color, #ffffff) 180deg,
+                var(--tg-theme-secondary-bg-color, #f0f0f0) 240deg,
+                var(--tg-theme-bg-color, #ffffff) 300deg,
+                var(--tg-theme-secondary-bg-color, #f0f0f0) 360deg
+            );
+            animation: rotate 60s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .container {
@@ -28,6 +59,8 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         h1 {
@@ -183,7 +216,7 @@
                     "Better luck next time!");
                 
                 isAnimating = false;
-                enableButtons();
+                // Buttons remain disabled after play
             }, 1000);
         }
 
