@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Telegram Betting Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #333333);
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            color-scheme: var(--tg-color-scheme);
+        }
+        h1 {
+            color: #2e8b57;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .bet-options {
+            margin: 20px 0;
+        }
+        .result {
+            font-size: 18px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff4500;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Telegram Betting Game</h1>
+    <div class="bet-options">
+        <p>Choose your bet and try your luck!</p>
+        <button onclick="placeBet('heads')">Bet on Heads</button>
+        <button onclick="placeBet('tails')">Bet on Tails</button>
+    </div>
+
+    <div id="result" class="result"></div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Initialize Telegram Web App
+        Telegram.WebApp.ready();
+
+        function placeBet(choice) {
+            const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
+            const message = outcome === choice ? 
+                `You won! It landed on ${outcome}.` : 
+                `You lost! It landed on ${outcome}.`;
+
+            document.getElementById('result').innerText = message;
+            Telegram.WebApp.showAlert(message);
+        }
+
+        // Set theme and color scheme
+        Telegram.WebApp.onEvent('themeChanged', function() {
+            document.body.setAttribute('style', '--bg-color:' + Telegram.WebApp.backgroundColor);
+        });
+
+        // Display main button to start game
+        Telegram.WebApp.MainButton.setText('Start Betting');
+        Telegram.WebApp.MainButton.show();
+
+        Telegram.WebApp.MainButton.onClick(function () {
+            Telegram.WebApp.showAlert("Choose heads or tails to start!");
+        });
+    </script>
+</body>
+</html>
