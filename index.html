@@ -46,6 +46,28 @@
         .lose {
             color: #dc3545;
         }
+        .coin {
+            margin: 20px auto;
+            width: 100px;
+            height: 100px;
+            background-image: url('./assets/flipping.webp');
+            background-size: contain;
+            background-repeat: no-repeat;
+            animation: spin 1.5s linear infinite;
+        }
+        .coin-heads {
+            background-image: url('./assets/head.webp');
+            animation: none;
+        }
+        .coin-tails {
+            background-image: url('./assets/tail.webp');
+            animation: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
     </style>
 </head>
 
@@ -57,6 +79,7 @@
         <button onclick="placeBet('tails')">Bet on Tails</button>
     </div>
 
+    <div id="coin" class="coin"></div>
     <div id="result" class="result"></div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -65,18 +88,28 @@
         Telegram.WebApp.ready();
 
         function placeBet(choice) {
-            const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
-            const resultElement = document.getElementById('result');
+            // Start the coin spinning animation
+            const coinElement = document.getElementById('coin');
+            coinElement.className = 'coin';
 
-            if (outcome === choice) {
-                resultElement.innerText = `You won! It landed on ${outcome}.`;
-                resultElement.className = 'result win';
-                Telegram.WebApp.showAlert("Congratulations! You won!");
-            } else {
-                resultElement.innerText = `You lost! It landed on ${outcome}.`;
-                resultElement.className = 'result lose';
-                Telegram.WebApp.showAlert("Better luck next time! You lost.");
-            }
+            // Simulate a delay for the flipping effect
+            setTimeout(() => {
+                const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
+                const resultElement = document.getElementById('result');
+                const isWin = outcome === choice;
+
+                // Update the coin image based on the result
+                coinElement.className = isWin ? 'coin coin-heads' : 'coin coin-tails';
+
+                // Display win or lose message
+                resultElement.innerText = isWin ? 
+                    `You won! It landed on ${outcome}.` : 
+                    `You lost! It landed on ${outcome}.`;
+                resultElement.className = `result ${isWin ? 'win' : 'lose'}`;
+
+                // Show alert in Telegram
+                Telegram.WebApp.showAlert(isWin ? "Congratulations! You won!" : "Better luck next time! You lost.");
+            }, 1500); // Match the duration of the spinning animation
         }
 
         // Set theme and color scheme
@@ -94,4 +127,5 @@
     </script>
 </body>
 </html>
+
 
