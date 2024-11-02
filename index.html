@@ -14,11 +14,19 @@
             padding: 20px;
             text-align: center;
             color-scheme: var(--tg-color-scheme);
-            transition: background-color 0.5s ease;
+            transition: all 0.5s ease;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+
+        .win-background {
+            background-color: rgba(39, 174, 96, 0.1);
+        }
+
+        .lose-background {
+            background-color: rgba(231, 76, 60, 0.1);
         }
 
         h1 {
@@ -100,21 +108,22 @@
             margin: 30px 0;
             font-weight: bold;
             min-height: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .win {
             color: #27AE60;
-            animation: popIn 0.5s ease;
         }
 
         .lose {
             color: #E74C3C;
-            animation: popIn 0.5s ease;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
         }
 
         .disabled {
@@ -123,7 +132,7 @@
             transform: scale(0.98);
         }
 
-        #resetButton {
+        .play-again {
             font-size: 28px;
             padding: 15px 40px;
             margin-top: 10px;
@@ -136,19 +145,21 @@
             width: 250px;
             height: 70px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            display: none;
-            animation: slideUp 0.5s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
         }
 
-        #resetButton:hover {
+        .play-again.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .play-again:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.15);
             background: linear-gradient(145deg, #79B465, #558B41);
-        }
-
-        @keyframes slideUp {
-            0% { transform: translateY(20px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
         }
 
     </style>
@@ -171,7 +182,7 @@
 
     <div id="coin" class="coin spinning"></div>
     <div id="result" class="result"></div>
-    <button id="resetButton" onclick="resetGame()">Play Again</button>
+    <button id="playAgain" class="play-again" onclick="resetGame()">Play Again</button>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -180,18 +191,18 @@
         const resultElement = document.getElementById('result');
         const headsButton = document.getElementById('headsBtn');
         const tailsButton = document.getElementById('tailsBtn');
-        const resetButton = document.getElementById('resetButton');
+        const playAgainButton = document.getElementById('playAgain');
 
         // Set initial state
         let isAnimating = false;
         coinElement.style.backgroundImage = "url('./assets/flipping.webp')";
 
-        function showResetButton() {
-            resetButton.style.display = 'block';
+        function showPlayAgain() {
+            playAgainButton.classList.add('show');
         }
 
-        function hideResetButton() {
-            resetButton.style.display = 'none';
+        function hidePlayAgain() {
+            playAgainButton.classList.remove('show');
         }
 
         function disableButtons() {
@@ -206,12 +217,13 @@
 
         function resetGame() {
             // Reset all states
+            document.body.className = '';
             coinElement.style.backgroundImage = "url('./assets/flipping.webp')";
             coinElement.classList.add('spinning');
             resultElement.innerHTML = '';
             resultElement.className = 'result';
             enableButtons();
-            hideResetButton();
+            hidePlayAgain();
             isAnimating = false;
         }
 
@@ -220,7 +232,7 @@
             
             isAnimating = true;
             disableButtons();
-            hideResetButton();
+            hidePlayAgain();
 
             const outcome = Math.random() < 0.5 ? 'head' : 'tail';
             const isWin = outcome === choice;
@@ -234,15 +246,18 @@
                 resultElement.innerHTML = isWin ? 
                     `You won! It landed on ${outcome}s.` : 
                     `You lost! It landed on ${outcome}s.`;
-                resultElement.className = `result ${isWin ? 'win' : 'lose'}`;
+                resultElement.className = `result ${isWin ? 'win' : 'lose'} show`;
+                
+                // Change background
+                document.body.className = isWin ? 'win-background' : 'lose-background';
                 
                 // Show alert
                 Telegram.WebApp.showAlert(isWin ? 
                     "🎉 Congratulations! You won! 🎉" : 
                     "Better luck next time!");
                 
-                // Show reset button
-                showResetButton();
+                // Show play again button
+                showPlayAgain();
             }, 1000);
         }
 
