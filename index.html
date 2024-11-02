@@ -141,10 +141,21 @@
             transition: all 0.3s ease;
             width: 100%;
             max-width: 200px;
+            display: none;
         }
 
         #tryAgainBtn:hover {
             opacity: 0.8;
+        }
+
+        #tryAgainBtn.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -184,12 +195,21 @@
             tailsButton.disabled = false;
         }
 
+        function showTryAgainButton() {
+            tryAgainBtn.classList.add('visible');
+        }
+
+        function hideTryAgainButton() {
+            tryAgainBtn.classList.remove('visible');
+        }
+
         function resetGame() {
             coinElement.style.backgroundImage = "url('./assets/flipping.webp')";
             coinElement.classList.add('spinning');
             resultElement.innerText = '';
             resultElement.className = 'result';
             enableButtons();
+            hideTryAgainButton();
             isAnimating = false;
         }
 
@@ -198,6 +218,7 @@
             
             isAnimating = true;
             disableButtons();
+            hideTryAgainButton();
 
             const outcome = Math.random() < 0.5 ? 'head' : 'tail';
             const isWin = outcome === choice;
@@ -215,8 +236,8 @@
                     "🎉 Congratulations! You won! 🎉" : 
                     "Better luck next time!");
                 
+                showTryAgainButton();
                 isAnimating = false;
-                // Buttons remain disabled after play
             }, 1000);
         }
 
