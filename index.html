@@ -53,7 +53,7 @@
             background-image: url('./assets/flipping.webp');
             background-size: contain;
             background-repeat: no-repeat;
-            animation: spin 1.5s linear;
+            animation: spin 1.5s linear infinite;
         }
         .coin-heads {
             background-image: url('./assets/head.webp');
@@ -88,30 +88,30 @@
         Telegram.WebApp.ready();
 
         function placeBet(choice) {
-            // Start the coin spinning animation
+            // Start the flipping animation
             const coinElement = document.getElementById('coin');
-            coinElement.className = 'coin';
+            const resultElement = document.getElementById('result');
 
-            // Simulate a delay for the flipping effect
+            // Set the result message
+            const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
+            const isWin = outcome === choice;
+
+            resultElement.innerText = isWin ? 
+                `You won! It landed on ${outcome}.` : 
+                `You lost! It landed on ${outcome}.`;
+            resultElement.className = `result ${isWin ? 'win' : 'lose'}`;
+
+            // Stop the flipping animation and show the result image
+            coinElement.className = isWin ? 'coin coin-heads' : 'coin coin-tails';
+
+            // Show alert in Telegram
+            Telegram.WebApp.showAlert(isWin ? "Congratulations! You won!" : "Better luck next time! You lost.");
+
+            // After 7 seconds, return to the infinite flipping animation
             setTimeout(() => {
-                const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
-                const resultElement = document.getElementById('result');
-                const isWin = outcome === choice;
-
-                // Update the result text
-                resultElement.innerText = isWin ? 
-                    `You won! It landed on ${outcome}.` : 
-                    `You lost! It landed on ${outcome}.`;
-                resultElement.className = `result ${isWin ? 'win' : 'lose'}`;
-
-                // Delay to show the final coin image after the animation
-                setTimeout(() => {
-                    coinElement.className = isWin ? 'coin coin-heads' : 'coin coin-tails';
-                }, 100); // 100ms delay
-
-                // Show alert in Telegram
-                Telegram.WebApp.showAlert(isWin ? "Congratulations! You won!" : "Better luck next time! You lost.");
-            }, 1500); // Match the duration of the spinning animation
+                coinElement.className = 'coin';
+                resultElement.innerText = ''; // Clear the result message
+            }, 7000); // Show result for 7 seconds
         }
 
         // Set theme and color scheme
@@ -129,5 +129,6 @@
     </script>
 </body>
 </html>
+
 
 
