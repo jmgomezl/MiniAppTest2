@@ -79,7 +79,9 @@
         <button onclick="placeBet('tails')">Bet on Tails</button>
     </div>
 
-    <div id="coin" class="coin"></div>
+    <div id="coinContainer">
+        <div id="coin" class="coin"></div>
+    </div>
     <div id="result" class="result"></div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -89,8 +91,9 @@
 
         function placeBet(choice) {
             // Start the flipping animation
-            const coinElement = document.getElementById('coin');
+            const coinContainer = document.getElementById('coinContainer');
             const resultElement = document.getElementById('result');
+            let coinElement = document.getElementById('coin');
 
             // Set the result message
             const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
@@ -109,14 +112,19 @@
 
             // After 7 seconds, return to the infinite flipping animation
             setTimeout(() => {
-                // Clear background image and force reflow to restart animation
+                // Remove the existing coin element and create a new one to reset the animation
+                coinContainer.removeChild(coinElement);
+
+                // Create a new coin element with the infinite flipping animation
+                coinElement = document.createElement('div');
+                coinElement.id = 'coin';
                 coinElement.className = 'coin';
-                coinElement.style.animation = 'none';
-                resultElement.innerText = ''; // Clear the result message
                 
-                setTimeout(() => {
-                    coinElement.style.animation = ''; // Reapply the flipping animation
-                }, 50); // Short delay to reset the animation
+                // Append the new coin element back to the container
+                coinContainer.appendChild(coinElement);
+                
+                // Clear the result message
+                resultElement.innerText = '';
             }, 7000); // Show result for 7 seconds
         }
 
@@ -135,6 +143,7 @@
     </script>
 </body>
 </html>
+
 
 
 
