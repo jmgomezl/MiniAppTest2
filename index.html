@@ -109,8 +109,13 @@
 
             // After 7 seconds, return to the infinite flipping animation
             setTimeout(() => {
-                coinElement.className = 'coin';
+                // Temporarily remove the class to reset the animation
+                coinElement.className = '';
                 resultElement.innerText = ''; // Clear the result message
+                
+                setTimeout(() => {
+                    coinElement.className = 'coin'; // Reapply the flipping animation
+                }, 50); // Short delay to reset the animation
             }, 7000); // Show result for 7 seconds
         }
 
